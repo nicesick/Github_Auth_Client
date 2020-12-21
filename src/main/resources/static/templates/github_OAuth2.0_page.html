@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GITHUB_OAUTH2.0</title>
+
+  <script  src="http://code.jquery.com/jquery-latest.min.js"></script>
+</head>
+<body>
+    <a id="authorize-request">
+        <img id="authorize-logo" width="500px" height="300px">
+    </a>
+</body>
+<script>
+    $(document).ready(function(){
+        requestImageLogo();
+        requestSession();
+
+        /**
+        const code  = getParamFromLocationHref('code');
+        const state = getParamFromLocationHref('state');
+
+        if (code != null && state != null) {
+            $('#authorizeYn').text('login success');
+
+            if (state == TEST_STATE_NUM) {
+                params = {
+                    'Accept'        : 'application/vnd.github.v3+json, application/json',
+                    'grant_type'    : 'authorization_code',
+                    'client_id'     : CLIENT_ID,
+                    'client_secret' : CLIENT_SECRET,
+                    'redirect_uri'  : REDIRECT_URI,
+                    'code'          : code
+                };
+
+                requestGithubToken(params);
+            } else {
+                alert('state is not equal');
+            }
+        } else {
+            $('#authorizeYn').text('login need');
+        }
+        */
+    });
+
+    /**
+     * accessToken 요청
+     */
+    function requestAccessToken() {
+        $.ajax({
+            url     : 'http://localhost:8080/oauth/accessToken',
+            method  : 'GET',
+
+            success : function(data) {
+                console.log('accessToken success');
+                console.log(data);
+            },
+
+            fail    : function(data) {
+                console.log(data);
+            }
+        });
+    }
+
+    /**
+     * authorize 요청
+     */
+    function requestAuthorize() {
+        $.ajax({
+            url     : 'http://localhost:8080/oauth/authorize',
+            method  : 'GET',
+
+            success : function(data) {
+                $('#authorize-request').attr("href", data);
+            },
+
+            fail    : function(data) {
+                console.log(data);
+            }
+        });
+    }
+
+    /**
+     * Session 요청
+     */
+    function requestSession() {
+        $.ajax({
+            url     : 'http://localhost:8080/oauth/session',
+            method  : 'GET',
+
+            success : function(data) {
+                console.log('session success');
+                console.log(data);
+
+                const code  = data.code;
+                const state = data.state;
+
+                if (code != null && state != null) {
+                    requestAccessToken();
+                } else {
+                    requestAuthorize();
+                }
+            },
+
+            fail    : function(data) {
+                console.log(data);
+            }
+        });
+    }
+
+    /**
+     * 로고 사진 요청
+     */
+    function requestImageLogo() {
+        $.ajax({
+            url     : 'http://localhost:8080/resource/logo',
+            method  : 'GET',
+
+            success : function(data) {
+                $('#authorize-logo').attr("src", data);
+            },
+
+            fail    : function(data) {
+                console.log(data);
+            }
+        });
+    }
+
+    /**
+     * getParamFromLocationHref
+     *
+     * 현재 URI 에서 필요한 Parameters 추출
+     */
+    function getParamFromLocationHref(paramKey) {
+        var results = new RegExp('[\?&amp;]' + paramKey + '=([^&amp;#]*)').exec(window.location.href);
+
+        return results != null ? results[1] : null;
+    }
+
+    /**
+     * requestGithubToken
+     *
+     * GITHUB TOKEN 요청
+     */
+    function requestGithubToken(params) {
+        $.ajax({
+            type    : 'POST',
+            url     : TOKEN_URL,
+            headers : params,
+
+            success : function(data) {
+                alert(data);
+            },
+
+            fail    : function(error) {
+                alert(error);
+            }
+        });
+    }
+
+    /**
+     * getRequestMethodGetQuery
+     *
+     * GET 요청을 보내기 위한 paramQuery 형태로 변환
+     */
+    function getRequestMethodGetQuery(params) {
+        let query = '';
+
+        $(params).each(function(index, param){
+            query += param;
+
+            if (index < params.length - 1) {
+                query += '&';
+            }
+        });
+
+        return query;
+    }
+
+    /**
+     * requestGithubCode
+     *
+     * GITHUB 에 CODE 요청
+     */
+    function requestGithubCode(params) {
+        location.href = AUTHORIZE_URL + '?' + getRequestMethodGetQuery(params);
+    }
+
+    /**
+    $('#authorize-github-login').click(function() {
+        const params = [
+            'response_type=code',
+            'client_id='    + CLIENT_ID,
+            'redirect_uri=' + REDIRECT_URI,
+            'scope='        + SCOPE,
+            'state='        + TEST_STATE_NUM
+        ];
+
+        requestGithubCode(params);
+    });
+    */
+</script>
+</html>
