@@ -19,7 +19,7 @@ This Project is for making Github_Auth_Client for practicing Auth2.0
     * Before executing Application, You have to fill github client information in application.properties file
     
     ```properties
-    # You can receive client_id, client_secret in Github > Settings > OAuth App
+    # You can receive client_id, client_secret in Github > Settings > Developer settings > OAuth Apps
     
     config.github.client.id = #{Your client id}
     config.github.client.secret = #{Your client secret}
@@ -227,5 +227,6 @@ This Project is for making Github_Auth_Client for practicing Auth2.0
    config.github.token_url= https://github.com/login/oauth/access_token
    config.github.api_url_base= https://api.github.com
    ```
-
-   
+## Reference
+* [oauth.com](https://www.oauth.com/)
+* [Github Docs](https://docs.github.com/en)
