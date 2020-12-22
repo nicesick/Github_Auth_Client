@@ -227,6 +227,10 @@ This Project is for making Github_Auth_Client for practicing Auth2.0
    config.github.token_url= https://github.com/login/oauth/access_token
    config.github.api_url_base= https://api.github.com
    ```
-## Reference
+
+
+
+## References
+
 * [oauth.com](https://www.oauth.com/)
 * [Github Docs](https://docs.github.com/en)
