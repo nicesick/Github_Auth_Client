@@ -3,6 +3,8 @@ package com.jihun.study.githubOAuth20.controller;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.jihun.study.githubOAuth20.utils.StreamUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
@@ -17,6 +19,8 @@ import java.util.Map;
 @Controller
 @RequestMapping("/oauth")
 public class OAuthController {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
+
     private String CLIENT_ID        = "";
     private String CLIENT_SECRET    = "";
     private String SCOPE            = "";
@@ -42,12 +46,12 @@ public class OAuthController {
     public String getOAuth(HttpSession session, String code, String state) {
         String template = "/templates/github_OAuth2.0_page.html";
 
-        System.out.println("getOAuth : code  = " + code);
-        System.out.println("getOAuth : state = " + state);
+        logger.info("getOAuth : code  = " + code);
+        logger.info("getOAuth : state = " + state);
 
         if (state != null && session.getAttribute("state") != null) {
             String sessionState = (String) session.getAttribute("state");
-            System.out.println("getOAuth : sessionState = " + sessionState);
+            logger.info("getOAuth : sessionState = " + sessionState);
 
             if (sessionState.equals(state)) {
                 session.setAttribute("code", code);
@@ -99,8 +103,8 @@ public class OAuthController {
         String code     = (String) session.getAttribute("code");
         String state    = (String) session.getAttribute("state");
 
-        System.out.println("getGithubAccessToken : code  = " + code);
-        System.out.println("getGithubAccessToken : state = " + state);
+        logger.info("getGithubAccessToken : code  = " + code);
+        logger.info("getGithubAccessToken : state = " + state);
 
         if (code != null && state != null) {
             Map<String, String> headers = new HashMap<>();
@@ -115,11 +119,10 @@ public class OAuthController {
             params.put("code"           , code);
 
             String result = StreamUtils.getStream(TOKEN_URL, StreamUtils.METHOD_POST, headers, params);
-            System.out.println("getGithubAccessToken : result     = " + result);
+            logger.info("getGithubAccessToken : result     = " + result);
 
             if (!"".equals(result)) {
                 JsonElement resultJson      = JsonParser.parseString(result);
-                System.out.println("getGithubAccessToken : resultJson = " + resultJson);
 
                 for (String jsonKey : resultJson.getAsJsonObject().keySet()) {
                     session.setAttribute(jsonKey, resultJson.getAsJsonObject().get(jsonKey).getAsString());
@@ -139,11 +142,11 @@ public class OAuthController {
         String token_type   = (String) session.getAttribute("token_type");
         String scope        = (String) session.getAttribute("scope");
 
-        System.out.println("getGithubApi : code         = " + code);
-        System.out.println("getGithubApi : state        = " + state);
-        System.out.println("getGithubApi : access_token = " + access_token);
-        System.out.println("getGithubApi : token_type   = " + token_type);
-        System.out.println("getGithubApi : scope        = " + scope);
+        logger.info("getGithubApi : code         = " + code);
+        logger.info("getGithubApi : state        = " + state);
+        logger.info("getGithubApi : access_token = " + access_token);
+        logger.info("getGithubApi : token_type   = " + token_type);
+        logger.info("getGithubApi : scope        = " + scope);
 
         if (code != null && state != null && access_token != null && token_type != null && scope != null) {
             Map<String, String> headers = new HashMap<>();
@@ -156,7 +159,6 @@ public class OAuthController {
             params.put("direction"      , "desc");
 
             String result = StreamUtils.getStream(API_URL_BASE + "/user/repos", StreamUtils.METHOD_GET, headers, params);
-
             return result;
         }
 
